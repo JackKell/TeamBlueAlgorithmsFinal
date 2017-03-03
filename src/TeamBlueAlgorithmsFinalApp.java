@@ -24,37 +24,35 @@ public class TeamBlueAlgorithmsFinalApp {
         }
 
         return graph;
-
     }
 
     public static void main(String [] args) {
 
-        ColorGraph graph = randColorGraph(10, .5);
+        int numVertices = 10; // Starting number of vertices
+        double density = .5; // Desired density of edges
 
+        ArrayList<Double> times_list = new ArrayList<>();
+        double startTime, endTime;
+        while (numVertices <= 100){
+            // Create random graph
+            ColorGraph graph = randColorGraph(numVertices, density);
 
-        /*
-
-        ArrayList<Long> times_list = new ArrayList<>();
-        long startTime, endTime;
-        while (numVertices < 100){
-            ColorGraph graph = new ColorGraph();
-
-            // create numVertices vertices
-
-            // Assign Edges based on desired density...
-            //for all possible edges (n^2 time...edge A-any, B-any, and so on)
-            if (Math.random() < density){
-                // Include the edge
-            }
-
-            startTime = System.nanoTime();
+            // Time DSatur on random graph
+            startTime = (double)System.nanoTime();
             graph.BrelazDSatur(); // Note need to record the number of colors in the graph
-            endTime = System.nanoTime();
-            times_list.add(startTime - endTime); // Record time
+            endTime = (double)System.nanoTime();
+            times_list.add(endTime - startTime); // Record time
 
             numVertices += 10;
         }
-        */
+
+        System.out.print("in nanoseconds:  ");
+        System.out.println(times_list);
+        for (int x = 0; x < times_list.size(); x++){
+            times_list.set(x, times_list.get(x) * 0.000001);
+        }
+        System.out.print("in milliseconds: ");
+        System.out.print(times_list);
 
 
 
