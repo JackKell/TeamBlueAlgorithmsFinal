@@ -5,7 +5,7 @@ public class TeamBlueAlgorithmsFinalApp {
 
     // numVertices: The number of vertices to start with
     // density: The desired density of edges
-    public static ColorGraph randColorGraph(int numVertices, double density,){
+    public static ColorGraph randColorGraph(int numVertices, double density){
         ColorGraph graph = new ColorGraph();
 
         // Create vertices (nodes)
