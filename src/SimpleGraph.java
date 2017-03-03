@@ -40,6 +40,10 @@ public class SimpleGraph<T> {
         adjacencyMap.computeIfPresent(vertex2, (k, v) -> v).remove(vertex1);
     }
 
+    Set<T> getNodes() {
+        return adjacencyMap.keySet();
+    }
+
     void print() {
         System.out.println(adjacencyMap);
     }
