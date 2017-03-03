@@ -1,3 +1,5 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
 
 public class TeamBlueAlgorithmsFinalApp {
@@ -11,7 +13,53 @@ public class TeamBlueAlgorithmsFinalApp {
     }
 
     public static void example() {
-        ColorGraph graph = new ColorGraph();
+        int numVertices = 10; // Starting number of vertices
+        double density = .5; // Desired density of edges
+
+        ArrayList<Double> times_list = new ArrayList<>();
+        double startTime, endTime;
+        int p = numVertices;
+        while (p <= 100){
+            // Create random graph
+            ColorGraph graph = randColorGraph(p, density);
+
+            // Time DSatur on random graph
+            startTime = (double)System.nanoTime();
+            graph.DSatur(); // Note need to record the number of colors in the graph
+            endTime = (double)System.nanoTime();
+            times_list.add(endTime - startTime); // Record time
+
+            p += 10;
+        }
+
+        System.out.print("in nanoseconds:  ");
+        System.out.println(times_list);
+        for (int x = 0; x < times_list.size(); x++){
+            times_list.set(x, times_list.get(x) * 0.000001);
+        }
+        System.out.print("in milliseconds: ");
+        System.out.print(times_list);
+
+        String csvFile_ = "./out.csv";
+        try {
+        FileWriter writer = new FileWriter(csvFile_);
+
+        p = numVertices;
+
+        for(double x : times_list){
+            writer.append("\n" + String.valueOf(p) + "," + String.valueOf(x)); // ...manually remove the first \n...
+        }
+
+            writer.flush();
+            writer.close();
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*
+        //ColorGraph graph = new ColorGraph();
         Node A = new Node("A");
         Node B = new Node("B");
         Node C = new Node("C");
@@ -38,11 +86,10 @@ public class TeamBlueAlgorithmsFinalApp {
         graph.addVertex(J, Arrays.asList(N));
         graph.addVertex(G, Arrays.asList(K));
         graph.addVertex(L, Arrays.asList(K, N));
-        graph.print();
-        graph.DSatur();
-        graph.printNodeColors();
-        graph.clearColors();
-        graph.printNodeColors();
+        */
+
+        //graph.print();
+        //graph.BrelazDSatur();
     }
 
     // numVertices: The number of vertices to start with
