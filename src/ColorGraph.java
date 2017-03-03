@@ -1,15 +1,14 @@
 import javafx.util.Pair;
 
-import java.util.ArrayList;
+import java.util.*;
+
 import static java.util.Collections.reverseOrder;
 import static java.util.Comparator.comparing;
-import static java.util.Collections.singletonList;
-
-import java.util.Comparator;
-import java.util.HashSet;
 
 
 class ColorGraph extends SimpleGraph<Node>{
+    private static final int minColor = 1;
+
     ArrayList<Pair<Node, Integer>> getAdjacencyDegrees() {
         final ArrayList<Pair<Node, Integer>> adjacencyDegrees = new ArrayList<>();
         adjacencyMap.forEach((key, value) -> adjacencyDegrees.add(new Pair<>(key, value.size())));
@@ -20,35 +19,64 @@ class ColorGraph extends SimpleGraph<Node>{
         return adjacencyDegrees;
     }
 
-    HashSet<Integer> getNeighborColors(Node node) {
+    private HashSet<Integer> getNeighborColors(Node node) {
         final HashSet<Integer> neighborColors = new HashSet<>();
         if (adjacencyMap.containsKey(node)) {
             for (Node neighbor : adjacencyMap.get(node)) {
                 neighborColors.add(neighbor.color);
             }
-            return neighborColors;
-        } else {
-            return null;
         }
+        return neighborColors;
     }
 
-    void BrelazDSatur() {
-        ArrayList<Pair<Node, Integer>> adjacencyDegrees = getAdjacencyDegrees();
-        System.out.println(adjacencyDegrees);
-        final int minColor = 1;
-        for (Pair p: adjacencyDegrees) {
-            final Node currentNode = (Node) p.getKey();
+    private Node getMostSaturatedNode(List<Node> nodes) {
+        Node mostSaturatedNode = nodes.get(0);
+        int highestSaturationDegree = getSaturationDegree(mostSaturatedNode);
+        for (int i = 1; i < nodes.size(); i++) {
+            Node currentNode = nodes.get(i);
+            int currentSaturationDegree = getSaturationDegree(currentNode);
+            if (highestSaturationDegree < currentSaturationDegree) {
+                mostSaturatedNode = currentNode;
+                highestSaturationDegree = currentSaturationDegree;
+            } else if (highestSaturationDegree == currentSaturationDegree) {
+                if (getAdjacencyDegree(mostSaturatedNode) < getAdjacencyDegree(currentNode)) {
+                    mostSaturatedNode = currentNode;
+                    highestSaturationDegree = currentSaturationDegree;
+                }
+            }
+        }
+        return mostSaturatedNode;
+    }
+
+    private int getSaturationDegree(Node node) {
+        return getNeighborColors(node).size();
+    }
+
+    private int getAdjacencyDegree(Node node) {
+        return adjacencyMap.get(node).size();
+    }
+
+    void DSatur() {
+        List<Node> uncoloredNodes = new ArrayList<>();
+        for (Node node : adjacencyMap.keySet()) {
+            node.color = 0;
+            uncoloredNodes.add(node);
+        }
+        while (uncoloredNodes.size() != 0) {
+            final Node currentNode = getMostSaturatedNode(uncoloredNodes);
             final HashSet<Integer> neighborColors = getNeighborColors(currentNode);
             int assignedColor = minColor;
             while(neighborColors.contains(assignedColor)) assignedColor++;
             currentNode.color = assignedColor;
+            uncoloredNodes.remove(currentNode);
         }
-        printNodeColors();
+    }
+
+    void clearColors() {
+        adjacencyMap.forEach((key, value) -> key.color = 0);
     }
 
     void printNodeColors() {
-        adjacencyMap.forEach((key, value) -> {
-            System.out.println(key.name + ", " + key.color);
-        });
+        adjacencyMap.forEach((key, value) -> System.out.println(key.name + ", " + key.color));
     }
 }

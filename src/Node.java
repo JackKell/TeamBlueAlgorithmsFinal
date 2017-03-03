@@ -4,7 +4,7 @@ public class Node {
 
     Node(String name) {
         this.name = name;
-        this.color = null;
+        this.color = 0;
     }
 
     @Override
