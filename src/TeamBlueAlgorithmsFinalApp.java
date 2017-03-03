@@ -1,5 +1,8 @@
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.*;
-import java.util.stream.IntStream;
+import java.io.FileWriter;
+
 
 public class TeamBlueAlgorithmsFinalApp {
 
@@ -26,16 +29,17 @@ public class TeamBlueAlgorithmsFinalApp {
         return graph;
     }
 
-    public static void main(String [] args) {
+    public static void main(String [] args) throws IOException {
 
         int numVertices = 10; // Starting number of vertices
         double density = .5; // Desired density of edges
 
         ArrayList<Double> times_list = new ArrayList<>();
         double startTime, endTime;
-        while (numVertices <= 100){
+        int p = numVertices;
+        while (p <= 100){
             // Create random graph
-            ColorGraph graph = randColorGraph(numVertices, density);
+            ColorGraph graph = randColorGraph(p, density);
 
             // Time DSatur on random graph
             startTime = (double)System.nanoTime();
@@ -43,7 +47,7 @@ public class TeamBlueAlgorithmsFinalApp {
             endTime = (double)System.nanoTime();
             times_list.add(endTime - startTime); // Record time
 
-            numVertices += 10;
+            p += 10;
         }
 
         System.out.print("in nanoseconds:  ");
@@ -54,9 +58,15 @@ public class TeamBlueAlgorithmsFinalApp {
         System.out.print("in milliseconds: ");
         System.out.print(times_list);
 
+        String csvFile_ = "./out.csv";
+        FileWriter writer = new FileWriter(csvFile_);
 
-
-
+        p = numVertices;
+        for(double x : times_list){
+            writer.append("\n" + String.valueOf(p) + "," + String.valueOf(x)); // ...manually remove the first \n...
+        }
+        writer.flush();
+        writer.close();
 
         /*
         //ColorGraph graph = new ColorGraph();
