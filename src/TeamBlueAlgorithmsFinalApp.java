@@ -1,65 +1,97 @@
+import javafx.util.Pair;
+
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 public class TeamBlueAlgorithmsFinalApp {
     public static void main(String [] args) {
-//        ColorGraph graph = randColorGraph(3, .5);
-//        graph.print();
-//        graph.DSatur();
-//        graph.printNodeColors();
-
-        example();
+        outputDsaturAverageRunTime("out.csv", 1000, 10);
     }
 
-    public static void example() {
-        int numVertices = 10; // Starting number of vertices
-        double density = .5; // Desired density of edges
-
-        ArrayList<Double> times_list = new ArrayList<>();
-        double startTime, endTime;
-        int p = numVertices;
-        while (p <= 100){
-            // Create random graph
-            ColorGraph graph = randColorGraph(p, density);
-
-            // Time DSatur on random graph
-            startTime = (double)System.nanoTime();
-            graph.DSatur(); // Note need to record the number of colors in the graph
-            endTime = (double)System.nanoTime();
-            times_list.add(endTime - startTime); // Record time
-
-            p += 10;
-        }
-
-        System.out.print("in nanoseconds:  ");
-        System.out.println(times_list);
-        for (int x = 0; x < times_list.size(); x++){
-            times_list.set(x, times_list.get(x) * 0.000001);
-        }
-        System.out.print("in milliseconds: ");
-        System.out.print(times_list);
-
-        String csvFile_ = "./out.csv";
+    public static void outputDsaturAverageRunTime(String outputFile, int maxNumberOfVertices, int stepSize) {
         try {
-        FileWriter writer = new FileWriter(csvFile_);
+            FileWriter csvFile = new FileWriter(outputFile);
 
-        p = numVertices;
+            for(Pair<Integer, Double> averageRunTime : getAverageRunTimesOfDstaur(maxNumberOfVertices, stepSize)){
+                csvFile.append(String.valueOf(averageRunTime.getKey()));
+                csvFile.append(", ");
+                csvFile.append(String.valueOf(averageRunTime.getValue()));
+                csvFile.append("\n");
+            }
 
-        for(double x : times_list){
-            writer.append("\n" + String.valueOf(p) + "," + String.valueOf(x)); // ...manually remove the first \n...
-        }
-
-            writer.flush();
-            writer.close();
-        }
+                csvFile.flush();
+                csvFile.close();
+            }
 
         catch (IOException e) {
             e.printStackTrace();
         }
+    }
 
-        /*
-        //ColorGraph graph = new ColorGraph();
+    public static List<Pair<Integer, Double>> getAverageRunTimesOfDstaur(int maxNumberOfVertices, int stepSize) {
+        List<Pair<Integer, Double>> averageRunTimes = new ArrayList<>();
+        for (int numberOfVertices = 0; numberOfVertices <= maxNumberOfVertices; numberOfVertices += stepSize) {
+            System.out.println("Calculating Run Time For " + numberOfVertices + " Vertices.");
+            averageRunTimes.add(new Pair<>(numberOfVertices, getAverageRunTimeOfDsatur(numberOfVertices)));
+        }
+        return averageRunTimes;
+    }
+
+    public static double getAverageRunTimeOfDsatur(int numberOfVertices) {
+        final int numberOfGraphs = 100;
+        List<ColorGraph> colorGraphs = new ArrayList<>();
+        for (int i = 1; i <= numberOfGraphs; i++) {
+            final double groupPercentage = i / (double) numberOfGraphs;
+            if (groupPercentage <= 0.25f) {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.82 - 0.73) + 0.73));
+            } else if (groupPercentage <= 0.5f) {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.72 - 0.61) + 0.61));
+            } else if (groupPercentage <= 0.75f) {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.59 - 0.44) + 0.44));
+            } else {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.34 - 0.26) + 0.26));
+            }
+        }
+        double totalRunTime = 0; // millisecond
+        long start; // nanoseconds
+        long end; // nanoseconds
+        for (ColorGraph graph: colorGraphs) {
+            start = System.nanoTime();
+            graph.Dsatur();
+            end = System.nanoTime();
+            totalRunTime += TimeUnit.NANOSECONDS.toMillis(end - start);
+        }
+        return totalRunTime / numberOfGraphs;
+    }
+
+    // numVertices: The number of vertices to start with
+    // density: The desired density of edges
+    public static ColorGraph randColorGraph(int numVertices, double density){
+        ColorGraph graph = new ColorGraph();
+
+        // Create vertices (nodes)
+        for (int i = 0; i < numVertices; i++) {
+            graph.addVertex(new Node("n" + String.valueOf(i)));
+        }
+
+        // Create edges based on uniform distribution and desired density
+        for(Node node_k : graph.getNodes()){
+            for(Node node_j : graph.getNodes()){
+                if(Math.random() < density && node_k != node_j){
+                    // Include the edge
+                    graph.addEdge(node_k,node_j);
+                }
+            }
+        }
+
+        return graph;
+
+    }
+
+    public static void testColorGraph() {
+        ColorGraph graph = new ColorGraph();
         Node A = new Node("A");
         Node B = new Node("B");
         Node C = new Node("C");
@@ -86,33 +118,8 @@ public class TeamBlueAlgorithmsFinalApp {
         graph.addVertex(J, Arrays.asList(N));
         graph.addVertex(G, Arrays.asList(K));
         graph.addVertex(L, Arrays.asList(K, N));
-        */
-
-        //graph.print();
-        //graph.BrelazDSatur();
-    }
-
-    // numVertices: The number of vertices to start with
-    // density: The desired density of edges
-    public static ColorGraph randColorGraph(int numVertices, double density){
-        ColorGraph graph = new ColorGraph();
-
-        // Create vertices (nodes)
-        for (int i = 0; i < numVertices; i++) {
-            graph.addVertex(new Node("n" + String.valueOf(i)));
-        }
-
-        // Create edges based on uniform distribution and desired density
-        for(Node node_k : graph.getNodes()){
-            for(Node node_j : graph.getNodes()){
-                if(Math.random() < density && node_k != node_j){
-                    // Include the edge
-                    graph.addEdge(node_k,node_j);
-                }
-            }
-        }
-
-        return graph;
-
+        graph.print();
+        graph.Dsatur();
+        graph.printNodeColors();
     }
 }

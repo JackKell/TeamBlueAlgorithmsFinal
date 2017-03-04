@@ -56,7 +56,7 @@ class ColorGraph extends SimpleGraph<Node>{
         return adjacencyMap.get(node).size();
     }
 
-    void DSatur() {
+    void Dsatur() {
         List<Node> uncoloredNodes = new ArrayList<>();
         for (Node node : adjacencyMap.keySet()) {
             node.color = 0;
