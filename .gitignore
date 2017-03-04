@@ -9,7 +9,7 @@
 .idea/dictionaries
 *.iml
 .idea
-output.txt
+output*
 
 # Sensitive or high-churn files:
 .idea/**/dataSources/

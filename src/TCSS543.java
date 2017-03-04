@@ -16,33 +16,55 @@ import java.util.concurrent.TimeUnit;
 public class TCSS543 {
     /**
      * The main function outputs the average run times to the given output file.
+     *
      * @param args output-file
      */
     public static void main(String [] args) {
         String outputFile = args[0];
-        outputDsaturAverageRunTimes(outputFile, 100, 10);
+        outputDsaturAverageRunTimes(outputFile, 100, 500, 10);
+        outputDsaturAverageMinColor("output2.txt", 100, 500, 10);
     }
 
     /**
-     * This function outputs the results of a getDsaturAverageRunTimes() call to a given outputfile
+     * This function outputs the results of a getDsaturAverageRunTimes() call to a given output file
+     *
      * @param outputFile The location where the results will be stored.
+     * @param numberOfGraphsPerTest
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
      */
-    private static void outputDsaturAverageRunTimes(String outputFile, int maxNumberOfVertices, int stepSize) {
+    private static void outputDsaturAverageRunTimes(String outputFile, int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
         try {
             FileWriter csvFile = new FileWriter(outputFile);
 
-            for(Pair<Integer, Double> averageRunTime : getDsaturAverageRunTimes(maxNumberOfVertices, stepSize)){
+            for(Pair<Integer, Double> averageRunTime : getDsaturAverageRunTimes(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)){
                 csvFile.append(String.valueOf(averageRunTime.getKey()));
                 csvFile.append(", ");
                 csvFile.append(String.valueOf(averageRunTime.getValue()));
                 csvFile.append("\n");
             }
-
                 csvFile.flush();
                 csvFile.close();
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static void outputDsaturAverageMinColor(String outputFile, int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
+        try {
+            FileWriter csvFile = new FileWriter(outputFile);
+
+            for(Pair<Integer, Double> averageRunTime : getDsaturAverageMinColors(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)){
+                csvFile.append(String.valueOf(averageRunTime.getKey()));
+                csvFile.append(", ");
+                csvFile.append(String.valueOf(averageRunTime.getValue()));
+                csvFile.append("\n");
             }
+            csvFile.flush();
+            csvFile.close();
+        }
 
         catch (IOException e) {
             e.printStackTrace();
@@ -50,41 +72,51 @@ public class TCSS543 {
     }
 
     /**
-     * Get a list of pairs of graph sizes and corresponding run times to color them using the Dsatur algorithm.
+     * Gets a list of pairs of graph sizes and corresponding average run times to color them using the Dsatur algorithm.
+     *
+     * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
      * @return a list of pairs of graph sizes and corresponding run times to color them.
      */
-    private static List<Pair<Integer, Double>> getDsaturAverageRunTimes(int maxNumberOfVertices, int stepSize) {
+    private static List<Pair<Integer, Double>> getDsaturAverageRunTimes(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
         List<Pair<Integer, Double>> averageRunTimes = new ArrayList<>();
         for (int numberOfVertices = 0; numberOfVertices <= maxNumberOfVertices; numberOfVertices += stepSize) {
-            System.out.println("Calculating Run Time For " + numberOfVertices + " Vertices...");
-            averageRunTimes.add(new Pair<>(numberOfVertices, getAverageRunTimeOfDsatur(numberOfVertices)));
+            System.out.println("Calculating Average Run Time For " + numberOfVertices + " Vertices...");
+            averageRunTimes.add(new Pair<>(numberOfVertices, getAverageRunTimeOfDsatur(numberOfGraphsPerTest, numberOfVertices)));
         }
         return averageRunTimes;
     }
 
     /**
-     * This function gets the average run time to color 100 randomly generated graphs with 4 different groups each
-     * having a different random edge density range using the Dsatur algorithm.
+     * Gets a list of pairs of graph sizes and corresponding average minimum number of colors needed to color the graph
+     * using the Dsatur algorithm.
+     *
+     * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
+     * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
+     * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
+     * @return a list of pairs of graph sizes and corresponding minimum number of colors.
+     */
+    private static List<Pair<Integer, Double>> getDsaturAverageMinColors(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
+        List<Pair<Integer, Double>> averageMinColors = new ArrayList<>();
+        for (int numberOfVertices = 0; numberOfVertices <= maxNumberOfVertices; numberOfVertices += stepSize) {
+            System.out.println("Calculating Average Min Color Count For " + numberOfVertices + " Vertices...");
+            averageMinColors.add(new Pair<>(numberOfVertices, getAverageMinColorOfDsatur(numberOfGraphsPerTest, numberOfVertices)));
+        }
+        return  averageMinColors;
+    }
+
+    /**
+     * This function gets the average run time to color a given number of randomly generated graphs with 4 different
+     * groups each having a different random edge density range and colored using the Dsatur algorithm.
+     *
+     * @param numberOfGraphs The total number of graphs that will be generated to compete the average.
      * @param numberOfVertices The total number of vertices in each of the generated graphs.
      * @return double The average time in milliseconds to color the graph using the Dsatur Algorithm.
      */
-    private static double getAverageRunTimeOfDsatur(int numberOfVertices) {
-        final int numberOfGraphs = 100;
-        List<ColorGraph> colorGraphs = new ArrayList<>();
-        for (int i = 1; i <= numberOfGraphs; i++) {
-            final double groupPercentage = i / (double) numberOfGraphs;
-            if (groupPercentage <= 0.25f) {
-                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.82 - 0.73) + 0.73));
-            } else if (groupPercentage <= 0.5f) {
-                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.72 - 0.61) + 0.61));
-            } else if (groupPercentage <= 0.75f) {
-                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.59 - 0.44) + 0.44));
-            } else {
-                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.34 - 0.26) + 0.26));
-            }
-        }
+    private static double getAverageRunTimeOfDsatur(int numberOfGraphs, int numberOfVertices) {
+        List<ColorGraph> colorGraphs = randColorGraphs(numberOfGraphs, numberOfVertices);
+
         double totalRunTime = 0; // millisecond
         long start; // nanoseconds
         long end; // nanoseconds
@@ -98,7 +130,51 @@ public class TCSS543 {
     }
 
     /**
+     * This function gets the average number of colors needed to color a graph using the Dsatur algorithm.
+     *
+     * @param numberOfGraphs The total number of graphs that will be generated to compete the average.
+     * @param numberOfVertices The total number of vertices in each of the generated graphs.
+     * @return double The average number of colors need to color the graph.
+     */
+    private static double getAverageMinColorOfDsatur(int numberOfGraphs, int numberOfVertices) {
+        List<ColorGraph> colorGraphs = randColorGraphs(numberOfGraphs, numberOfVertices);
+
+        double totalMinColorCount = 0;
+        for (ColorGraph graph: colorGraphs) {
+            graph.Dsatur();
+            totalMinColorCount += graph.getColorCount();
+        }
+
+        return totalMinColorCount / numberOfGraphs;
+    }
+
+    /**
+     * Generates a list of random generated graphs with 4 different and equally sized density groups.
+     *
+     * @param numberOfGraphs The number of graphs to be returned in the list.
+     * @param numberOfVertices The number of vertices in each graph.
+     * @return List of the randomly generated graphs.
+     */
+    private static List<ColorGraph> randColorGraphs(int numberOfGraphs, int numberOfVertices) {
+        List<ColorGraph> colorGraphs = new ArrayList<>();
+        for (int i = 1; i <= numberOfGraphs; i++) {
+            final double groupPercentage = i / (double) numberOfGraphs;
+            if (groupPercentage <= 0.25f) {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.82 - 0.73) + 0.73));
+            } else if (groupPercentage <= 0.5f) {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.72 - 0.61) + 0.61));
+            } else if (groupPercentage <= 0.75f) {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.59 - 0.44) + 0.44));
+            } else {
+                colorGraphs.add(randColorGraph(numberOfVertices, Math.random() * (0.34 - 0.26) + 0.26));
+            }
+        }
+        return colorGraphs;
+    }
+
+    /**
      * Generates a random color graph given a number of vertices and edge edge density
+     *
      * @param numVertices The number of nodes within the graph.
      * @param edgeDensity The average density of edges per vertex.
      * @return ColorGraph that is randomly generated.
@@ -122,9 +198,12 @@ public class TCSS543 {
         }
 
         return graph;
-
     }
 
+    /**
+     * This function represents a coloring graph problem from the slides in class and can be used to check to see if
+     * the Dsatur implemenation is working properly.
+     */
     private static void testColorGraph() {
         ColorGraph graph = new ColorGraph();
         Node A = new Node("A");

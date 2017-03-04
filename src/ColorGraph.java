@@ -99,6 +99,24 @@ class ColorGraph extends SimpleGraph<Node>{
     }
 
     /**
+     * This function return a unique set of the colors used in the graph.
+     * @return Hashset of the color integers used in the graph.
+     */
+    HashSet<Integer> getColors() {
+        HashSet<Integer> colors = new HashSet<>();
+        adjacencyMap.forEach((key, value) -> colors.add(key.color));
+        return colors;
+    }
+
+    /**
+     * Gets the number of unique colors used in the graph.
+     * @return An representing the number of unique colors.
+     */
+    int getColorCount() {
+        return getColors().size();
+    }
+
+    /**
      * For every node in the graph, this function outputs the name of each node and the corresponding node color.
      */
     void printNodeColors() {
