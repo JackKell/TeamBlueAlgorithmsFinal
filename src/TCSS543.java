@@ -21,15 +21,15 @@ public class TCSS543 {
      */
     public static void main(String [] args) {
         String outputFile = args[0];
-        outputDsaturAverageRunTimes(outputFile, 100, 500, 10);
-        outputDsaturAverageMinColor("output2.txt", 100, 500, 10);
+        outputDsaturAverageRunTimes(outputFile, 100, 100, 10);
+        outputDsaturAverageMinColor("output2.txt", 100, 100, 10);
     }
 
     /**
      * This function outputs the results of a getDsaturAverageRunTimes() call to a given output file
      *
      * @param outputFile The location where the results will be stored.
-     * @param numberOfGraphsPerTest
+     * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
      */
@@ -52,6 +52,14 @@ public class TCSS543 {
         }
     }
 
+    /**
+     * This function outputs the results of a getDsaturAverageMinColors() call to a given output file
+     *
+     * @param outputFile The location where the results will be stored.
+     * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
+     * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
+     * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
+     */
     private static void outputDsaturAverageMinColor(String outputFile, int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
         try {
             FileWriter csvFile = new FileWriter(outputFile);
