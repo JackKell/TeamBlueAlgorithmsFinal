@@ -6,7 +6,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * This program is used to answer the question posed in the TCSS543A – Winter 2017 Homework 3: Programming Project.
  * The following implements and tests the Dsatur graph color algorithm.
- *
  * @author Dan Gray
  * @author Brandon Olson
  * @since 2017-2-27
@@ -14,22 +13,26 @@ import java.util.concurrent.TimeUnit;
 public class TCSS543 {
     /**
      * The main function outputs the average run times to the given output file.
-     *
      * @param args output-file
      */
     public static void main(String [] args) {
-        outputDsaturAverageRunTimes(100, 100, 10);
-        outputDsaturAverageMinColors(100, 100, 10);
+        final int numberOfGraphsPerTest = 100;
+        // Note to get the results presented in our write up we set max number of vertices to 500 instead of 100
+        // but at 500 it will take a couple of minutes complete so for the sake of time it is currently set to 100.
+        final int maxNumberOfVertices = 100;
+        final int stepSize = 10;
+        outputDsaturAverageRunTimes(numberOfGraphsPerTest, maxNumberOfVertices, stepSize);
+        outputDsaturAverageMinColors(numberOfGraphsPerTest, maxNumberOfVertices, stepSize);
     }
 
     /**
-     * This function outputs the results of a getDsaturAverageRunTimes() call to a given output file
-     *  @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
+     * This function outputs the results of a getDsaturAverageRunTimes() call
+     * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
      */
     private static void outputDsaturAverageRunTimes(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
-        System.out.println("Number Of Vertices, Average Run Time (ms)");
+        System.out.println("Number Of Vertices, Average Coloring Run Time (ms)");
         for (Pair<Integer, Double> averageRunTime : getDsaturAverageRunTimes(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)) {
             String currentPair = String.valueOf(averageRunTime.getKey()) + ", " + String.valueOf(averageRunTime.getValue());
             System.out.println(currentPair);
@@ -38,7 +41,7 @@ public class TCSS543 {
     }
 
     /**
-     * This function outputs the results of a getDsaturAverageMinColors() call to a given output file
+     * This function outputs the results of a getDsaturAverageMinColors() call
      * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
@@ -70,7 +73,6 @@ public class TCSS543 {
     /**
      * Gets a list of pairs of graph sizes and corresponding average minimum number of colors needed to color the graph
      * using the Dsatur algorithm.
-     *
      * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
@@ -87,7 +89,6 @@ public class TCSS543 {
     /**
      * This function gets the average run time to color a given number of randomly generated graphs with 4 different
      * groups each having a different random edge density range and colored using the Dsatur algorithm.
-     *
      * @param numberOfGraphs The total number of graphs that will be generated to compete the average.
      * @param numberOfVertices The total number of vertices in each of the generated graphs.
      * @return double The average time in milliseconds to color the graph using the Dsatur Algorithm.
@@ -109,7 +110,6 @@ public class TCSS543 {
 
     /**
      * This function gets the average number of colors needed to color a graph using the Dsatur algorithm.
-     *
      * @param numberOfGraphs The total number of graphs that will be generated to compete the average.
      * @param numberOfVertices The total number of vertices in each of the generated graphs.
      * @return double The average number of colors need to color the graph.
@@ -128,7 +128,6 @@ public class TCSS543 {
 
     /**
      * Generates a list of random generated graphs with 4 different and equally sized density groups.
-     *
      * @param numberOfGraphs The number of graphs to be returned in the list.
      * @param numberOfVertices The number of vertices in each graph.
      * @return List of the randomly generated graphs.
@@ -152,7 +151,6 @@ public class TCSS543 {
 
     /**
      * Generates a random color graph given a number of vertices and edge edge density
-     *
      * @param numVertices The number of nodes within the graph.
      * @param edgeDensity The average density of edges per vertex.
      * @return ColorGraph that is randomly generated.
