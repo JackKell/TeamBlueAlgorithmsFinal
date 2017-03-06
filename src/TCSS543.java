@@ -1,7 +1,5 @@
 import javafx.util.Pair;
 
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -20,68 +18,42 @@ public class TCSS543 {
      * @param args output-file
      */
     public static void main(String [] args) {
-        String outputFile = args[0];
-        outputDsaturAverageRunTimes(outputFile, 100, 100, 10);
-        outputDsaturAverageMinColor("output2.txt", 100, 100, 10);
+        outputDsaturAverageRunTimes(100, 100, 10);
+        outputDsaturAverageMinColors(100, 100, 10);
     }
 
     /**
      * This function outputs the results of a getDsaturAverageRunTimes() call to a given output file
-     *
-     * @param outputFile The location where the results will be stored.
-     * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
+     *  @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
      */
-    private static void outputDsaturAverageRunTimes(String outputFile, int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
-        try {
-            FileWriter csvFile = new FileWriter(outputFile);
-
-            for(Pair<Integer, Double> averageRunTime : getDsaturAverageRunTimes(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)){
-                csvFile.append(String.valueOf(averageRunTime.getKey()));
-                csvFile.append(", ");
-                csvFile.append(String.valueOf(averageRunTime.getValue()));
-                csvFile.append("\n");
-            }
-                csvFile.flush();
-                csvFile.close();
+    private static void outputDsaturAverageRunTimes(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
+        System.out.println("Number Of Vertices, Average Run Time (ms)");
+        for (Pair<Integer, Double> averageRunTime : getDsaturAverageRunTimes(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)) {
+            String currentPair = String.valueOf(averageRunTime.getKey()) + ", " + String.valueOf(averageRunTime.getValue());
+            System.out.println(currentPair);
         }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println();
     }
 
     /**
      * This function outputs the results of a getDsaturAverageMinColors() call to a given output file
-     *
-     * @param outputFile The location where the results will be stored.
      * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
      */
-    private static void outputDsaturAverageMinColor(String outputFile, int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
-        try {
-            FileWriter csvFile = new FileWriter(outputFile);
-
-            for(Pair<Integer, Double> averageRunTime : getDsaturAverageMinColors(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)){
-                csvFile.append(String.valueOf(averageRunTime.getKey()));
-                csvFile.append(", ");
-                csvFile.append(String.valueOf(averageRunTime.getValue()));
-                csvFile.append("\n");
-            }
-            csvFile.flush();
-            csvFile.close();
+    private static void outputDsaturAverageMinColors(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
+        System.out.println("Number Of Vertices, Average Minimum Number Of Colors");
+        for (Pair<Integer, Double> averageMinColor : getDsaturAverageMinColors(numberOfGraphsPerTest, maxNumberOfVertices, stepSize)) {
+            String currentPair = String.valueOf(averageMinColor.getKey()) + ", " + String.valueOf(averageMinColor.getValue());
+            System.out.println(currentPair);
         }
-
-        catch (IOException e) {
-            e.printStackTrace();
-        }
+        System.out.println();
     }
 
     /**
      * Gets a list of pairs of graph sizes and corresponding average run times to color them using the Dsatur algorithm.
-     *
      * @param numberOfGraphsPerTest The number of graphs generated to compute each run time average.
      * @param maxNumberOfVertices The max number of vertices that will be tested in any graph.
      * @param stepSize The rate at which vertices will be added the current number of vertices to be tested.
@@ -90,7 +62,6 @@ public class TCSS543 {
     private static List<Pair<Integer, Double>> getDsaturAverageRunTimes(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
         List<Pair<Integer, Double>> averageRunTimes = new ArrayList<>();
         for (int numberOfVertices = 0; numberOfVertices <= maxNumberOfVertices; numberOfVertices += stepSize) {
-            System.out.println("Calculating Average Run Time For " + numberOfVertices + " Vertices...");
             averageRunTimes.add(new Pair<>(numberOfVertices, getAverageRunTimeOfDsatur(numberOfGraphsPerTest, numberOfVertices)));
         }
         return averageRunTimes;
@@ -108,7 +79,6 @@ public class TCSS543 {
     private static List<Pair<Integer, Double>> getDsaturAverageMinColors(int numberOfGraphsPerTest, int maxNumberOfVertices, int stepSize) {
         List<Pair<Integer, Double>> averageMinColors = new ArrayList<>();
         for (int numberOfVertices = 0; numberOfVertices <= maxNumberOfVertices; numberOfVertices += stepSize) {
-            System.out.println("Calculating Average Min Color Count For " + numberOfVertices + " Vertices...");
             averageMinColors.add(new Pair<>(numberOfVertices, getAverageMinColorOfDsatur(numberOfGraphsPerTest, numberOfVertices)));
         }
         return  averageMinColors;
